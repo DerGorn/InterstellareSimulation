@@ -17,4 +17,4 @@ used versions:
     - cargo: 1.66.1         // build system and package manager 
     - rustc: 1.66.1         // rust compiler
 Higher versions should still be compatible but are not guranteed to work properly
-For a quick compilation during development use `cargo run`. The command builds an unoptimised version and executes it. For an optimised build use `cargo run -r` for autostart or `cargo build -r` and run the executable in './target/release'
+For a quick compilation during development use `cargo run`. The command builds an unoptimised version and executes it. For an optimised build use `cargo run -r` for autostart or `cargo build -r` and run the executable in './target/release' yourself.

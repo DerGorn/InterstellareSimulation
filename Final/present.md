@@ -12,7 +12,7 @@ math: mathjax
 
 ---
 
-<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span>Dominik Schlothane  |   16.05.2023<span/></div>" -->
+<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span>Interstellare Simulation</span><span>Dominik Schlothane  |   16.05.2023<span/></div>" -->
 <!-- paginate: true -->
 
 ## Das Ziel
@@ -221,6 +221,44 @@ const fireEvent = <K extends Events>(
   registeredFunctions[eventType].forEach((l) => l(event));
 };
 ```
+
+---
+
+## GUI - Umlaufbahnen
+
+- Speichere Regelmäßig Position
+um die Flugbahn zu zeichnen
+- Problem: 
+    - ewige Datenspeicherung
+    - Speicher läuft voll
+    - Grafik stürzt ab
+<img src="AufgrundVonLeistungNichtZeichenbareSchwankungenDerBahnen.png" style="position: absolute; bottom: 40px; right: 10px; height: 440px;"/>
+
+---
+
+## GUI - Pfad Optimisation
+
+- Pollingrate proportional zum Radius
+$\Rightarrow$ Weniger Datenpunkte für äußere Planeten, z.B. Neptun
+- Pfade schließen, wenn er sich dem Anfang nähert
+$\Rightarrow$ Gesamtmenge an Datenpunkten beschränkt
+- Problem: Beschleunigter Drift nach rechts
+$\Rightarrow$ Pfade lassen sich nur zu Beginn der Simulation schließen
+
+---
+
+## A Second Sun - The Aftermath
+
+- zweite Sonne
+- beide Sonnen, Merkur 
+und Venus werden weg
+geschleudert
+- Mars, die Erde und der 
+Mond umkreisen die 
+zweite Sonne
+- Jupiter stürzt ins Zentrum
+
+<img src="IntroducedAnotherSunWith6e32kgMassItDestroyedEverything.png" style="position: absolute; bottom: 40px; right: 40px; height: 440px;"/>
 
 ---
 
