@@ -5,14 +5,14 @@ math: mathjax
 ---
 
 <div class="title">
-<h1>Interstellare Simulation</h1>
-<h2>- ein Vielkörpersystem -</h2>
+<h1>Praktische Informatik</h1>
+<h2>- eine Vielkörpersimulation -</h2>
 <h3>Dominik Schlothane</h3>
 </div>
 
 ---
 
-<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span>Interstellare Simulation</span><span>Dominik Schlothane  |   16.05.2023<span/></div>" -->
+<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span style='font-weight: bold'>Praktische Informatik - eine Vielkörpersimulation</span><span>Dominik Schlothane  |   16.05.2023<span/></div>" -->
 <!-- paginate: true -->
 
 ## Das Ziel
@@ -60,14 +60,12 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 
 ---
 
-## Vorkennnisse
+## Vorkenntnisse
 
-* Python geht bei echtzeit simulationen mit Grafik schnell in die Knie
-* Simulation in Bytecode:
-    * Meiste Erfahrung in Rust
+- Python geht bei echtzeit Simulationen mit Grafik schnell in die Knie
+- Grafik: Meiste Erfahrung im Web (HTML + CSS + TypeScript)
+- Simulation in Rust
 
-* Grafik:
-    * Meiste Erfahrung im Web (HTML + CSS + TypeScript)
 
 ---
 
@@ -83,22 +81,8 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 
 ## Simulation - Struktur
 
-```rust
-use narlgebar::Vector3;
 
-struct Body {
-    mass: f64,
-    pos: Vector3<f64>,
-    vel: Vector3<f64>,
-    acc: Vector3<f64>
-};
-
-struct Simulation {
-    bodies: Vec<Body>,
-    interaction_constant: f64
-    time_scale: f64
-};
-```
+<img src="SimulationAufbau.png" style="position: absolute; top: 75px; left: 85px; height: 400px;"/>
 
 ---
 
@@ -108,23 +92,10 @@ struct Simulation {
 
 ---
 
-## Simulation - time_step
+## Simulation - step
 
-```rust
-impl Simulation {
-    fn step(&mut self, h: f64) {
-        for i in 0..self.bodies.len(){
-            for k in i+1..self.bodies.len(){
-                self.bodies[i].interact(&self.bodies[k]);
-            }
-        }
-        for body in self.bodies{
-            body.accelerate(h);
-            body.movement(h);
-        }
-    }
-}
-```
+
+<img src="time_step.png" style="position: absolute; top: 75px; left: 130px; height: 400px;"/>
 
 ---
 
@@ -132,9 +103,9 @@ impl Simulation {
 
 ---
 
-## Server - Aufbau
+## Server - Ablauf
 
-<img src="server.png" style="position: absolute; top: 190px; left: 15px; height: 170px;"/>
+<img src="server.png" style="position: absolute; top: 190px; left: 0px; height: 170px;"/>
 
 ---
 
@@ -148,6 +119,12 @@ impl Simulation {
     - Remove: entferne einen Body, `event = {index: index}`
     - Update: modifiziere eine Body, `event = {index: Body}`
     - Meta: modifiziere MetaData, `event = {time_scale, interaction_constant}`
+
+---
+
+## Server - handle_connection
+
+<img src="request.png" style="position: absolute; top: 75px; left: 0px; height: 400px;"/>
 
 ---
 
@@ -173,14 +150,61 @@ impl Simulation {
 - Malt die aktuelle Position der Bodies
 - Malt ihre zurückgelegten Pfade
 - Steuert die Kamera
+    - `w/s/a/d` zum bewegen
+    - `+/-/mouseWheel` zum zoomen
 
 ---
 
-## GUI - MenuGrafics
+## GUI - Simulationsparameter modifizieren
 
-- Sidebarmenus mit Slidern, um Simulation anzupassen
-    - MetaData
-    - BodyInfo des ausgewählten Bodies
+- Slider zeigen aktuellen Wert der Simulationsparameter
+$\Rightarrow$ pausiere GUI, um parameter zu ändern
+- Problem: 1 Loop $\Rightarrow$ zeichnen wird auch pausiert 
+$\Rightarrow$ unschöner Sprung
+- 2 Lösungen:
+    - Simulation pausieren
+    - 2 Loops: einer zum Zeichnen, der andere für Parameter
+
+---
+
+## GUI - Umlaufbahnen
+
+- Speichere Regelmäßig Position
+um die Flugbahn zu zeichnen
+- Problem: 
+    - ewige Datenspeicherung
+    - Speicher läuft voll
+    - Grafik stürzt ab
+<img src="AufgrundVonLeistungNichtZeichenbareSchwankungenDerBahnen.png" style="position: absolute; bottom: 40px; right: 10px; height: 440px;"/>
+
+---
+
+## GUI - Pfad Optimisation
+
+- Pollingrate proportional zum Radius
+$\Rightarrow$ Weniger Datenpunkte für äußere Planeten, z.B. Neptun
+- Pfad schließen, wenn er sich dem Anfang nähert
+$\Rightarrow$ Gesamtmenge an Datenpunkten beschränkt
+- Problem: Beschleunigter Drift nach rechts
+$\Rightarrow$ Pfade lassen sich nur zu Beginn der Simulation schließen
+
+---
+
+## A Second Sun - The Aftermath
+
+- zweite Sonne
+- beide Sonnen, Merkur,
+Venus weg geschleudert
+- Mars, die Erde und der 
+Mond umkreisen die 
+zweite Sonne
+- Jupiter stürzt ins Zentrum
+
+<img src="IntroducedAnotherSunWith6e32kgMassItDestroyedEverything.png" style="position: absolute; bottom: 40px; right: 40px; height: 440px;"/>
+
+---
+
+<iframe src="PLATZHALTERFORURL" title="Running Simulation" style="z-index: 1000; position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; border: none; "></iframe>
 
 ---
 
@@ -221,45 +245,3 @@ const fireEvent = <K extends Events>(
   registeredFunctions[eventType].forEach((l) => l(event));
 };
 ```
-
----
-
-## GUI - Umlaufbahnen
-
-- Speichere Regelmäßig Position
-um die Flugbahn zu zeichnen
-- Problem: 
-    - ewige Datenspeicherung
-    - Speicher läuft voll
-    - Grafik stürzt ab
-<img src="AufgrundVonLeistungNichtZeichenbareSchwankungenDerBahnen.png" style="position: absolute; bottom: 40px; right: 10px; height: 440px;"/>
-
----
-
-## GUI - Pfad Optimisation
-
-- Pollingrate proportional zum Radius
-$\Rightarrow$ Weniger Datenpunkte für äußere Planeten, z.B. Neptun
-- Pfade schließen, wenn er sich dem Anfang nähert
-$\Rightarrow$ Gesamtmenge an Datenpunkten beschränkt
-- Problem: Beschleunigter Drift nach rechts
-$\Rightarrow$ Pfade lassen sich nur zu Beginn der Simulation schließen
-
----
-
-## A Second Sun - The Aftermath
-
-- zweite Sonne
-- beide Sonnen, Merkur 
-und Venus werden weg
-geschleudert
-- Mars, die Erde und der 
-Mond umkreisen die 
-zweite Sonne
-- Jupiter stürzt ins Zentrum
-
-<img src="IntroducedAnotherSunWith6e32kgMassItDestroyedEverything.png" style="position: absolute; bottom: 40px; right: 40px; height: 440px;"/>
-
----
-
-<iframe src="PLATZHALTERFORURL" title="Running Simulation" style="z-index: 1000; position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; border: none; "></iframe>

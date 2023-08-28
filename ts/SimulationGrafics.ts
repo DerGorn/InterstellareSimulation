@@ -195,6 +195,16 @@ const getBodyInfo = (body_index: number) => {
       vz: 1,
     });
   }
+  if (body_index > bodyColors.length) {
+    for (let i = 0; i < bodyColors.length - body_index; i++) {
+      setBodyColor(randomColor());
+    }
+  }
+  if (body_index > bodyNames.length) {
+    for (let i = 0; i < bodyNames.length - body_index; i++) {
+      setBodyName(randomName());
+    }
+  }
   return {
     name: bodyNames.at(body_index) as string,
     color: bodyColors.at(body_index) as string,
