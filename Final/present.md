@@ -5,19 +5,19 @@ math: mathjax
 ---
 
 <div class="title">
-<h1>Praktische Informatik</h1>
+<h1>Unser Sonnensystem</h1>
 <h2>- eine Vielkörpersimulation -</h2>
 <h3>Dominik Schlothane</h3>
 </div>
 
 ---
 
-<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span style='font-weight: bold'>Praktische Informatik - eine Vielkörpersimulation</span><span>Dominik Schlothane  |   16.05.2023<span/></div>" -->
+<!-- footer: "<div style='width: 20px;'></div><div class='foot'><span style='font-weight: bold'>Unser Sonnensystem - eine Vielkörpersimulation</span><span>Dominik Schlothane  |   Praktische Informatik<span/></div>" -->
 <!-- paginate: true -->
 
 ## Das Ziel
 
-- Interaktive echtzeit Simulation der Planeten im Sonnensystem
+- Interaktive "echtzeit" Simulation der Planeten im Sonnensystem
 - Konkret:
     - Vielkörpersimulation mit Gravitationskraft
     - GUI:
@@ -40,6 +40,9 @@ $\vec{a_{ij}} = G\frac{(\vec{r_j} - \vec{r_i})}{(\overline{\vec{r_j} - \vec{r_i}
 
 $\vec{a_{i}} = \sum_{j\neq i} \vec{a_{ij}}$
 
+
+<img src="kraft.png" style="position: absolute; right: 40px; top: 100px; width: 400px" />
+
 ---
 
 ## Numerik
@@ -54,17 +57,22 @@ $v(t_{n+1}) = v(t_n) + h\cdot a(t_{n})$
 
 $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 
+<img src="Euler.png" style="position: absolute; right: 40px; bottom: 80px; width: 250px" />
+
+  <div style="font-size: 10px;position: absolute; right: 45px; bottom: 80px;" > <a href="https://commons.wikimedia.org/wiki/File:Euler_two_steps.svg">HilberTraum</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons </div>
+
 ---
 
 <h1 style="font-size: 10rem; text-align: center; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)">Umsetzung</h1>
 
 ---
 
-## Vorkenntnisse
+## Umsetzung
 
-- Python geht bei echtzeit Simulationen mit Grafik schnell in die Knie
-- Grafik: Meiste Erfahrung im Web (HTML + CSS + TypeScript)
+- Grafikerfahrung im Web (HTML + CSS + TypeScript)
+$\Rightarrow$ Leistung könnte mit Simulation knapp werden
 - Simulation in Rust
+- Server notwenidg (Rust)
 
 
 ---
@@ -93,19 +101,24 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 ---
 
 ## Simulation - step
-
-
-<img src="time_step.png" style="position: absolute; top: 75px; left: 130px; height: 400px;"/>
-
+```rust
+step(h: f64) {
+  for i in 0..self.bodies.len() {
+      for k in i + 1..self.bodies.len() {
+          self.interact(i, k);
+      }
+  }
+  
+  for i in 0..self.bodies.len() {
+      let body = &mut self.bodies[i];
+      body.accelerate(h)
+      body.movement(h)
+  }
+}
+```
 ---
 
 <h1 style="font-size: 10rem; text-align: center; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%)">Server</h1>
-
----
-
-## Server - Ablauf
-
-<img src="server.png" style="position: absolute; top: 190px; left: 0px; height: 170px;"/>
 
 ---
 
@@ -119,6 +132,12 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
     - Remove: entferne einen Body, `event = {index: index}`
     - Update: modifiziere eine Body, `event = {index: Body}`
     - Meta: modifiziere MetaData, `event = {time_scale, interaction_constant}`
+
+---
+
+## Server - Ablauf
+
+<img src="server.png" style="position: absolute; top: 190px; left: 0px; height: 170px;"/>
 
 ---
 
@@ -140,18 +159,18 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 
 ---
 
-## GUI - SimulationGrafics
+## GUI - Kollision
 
-<img src="SimulationMenuExample.png" style="position: absolute; bottom: 40px; right: 40px; height: 250px;"/>
+- keine Kollision implementiert
+- Punktmassen kommen sich sehr nahe
+$\Rightarrow a > 10^6 \frac{\text{m}}{\text{s}^2}$ möglich
+- typisch: `time_scale = 1e6, h = 1e3` 
+$\Rightarrow \Delta x > 10^{12}\, \text{m}$
+- 2 Lösungen:
+  - lösche Bodies mit $a > 10^6 \frac{\text{m}}{\text{s}^2}$
+  - implementiere Kollision
 
-- Hört auf:
-    - `simulation` SSE um aktuelle Position der Bodies zu zeichnen
-    - `removed` SSE um Farben/Pfade der Bodies zu löschen
-- Malt die aktuelle Position der Bodies
-- Malt ihre zurückgelegten Pfade
-- Steuert die Kamera
-    - `w/s/a/d` zum bewegen
-    - `+/-/mouseWheel` zum zoomen
+<img src="IntroducedAnotherSunWith6e32kgMassItDestroyedEverything.png" style="position: absolute; bottom: 40px; right: 0px; height: 330px;"/>
 
 ---
 
@@ -159,7 +178,8 @@ $x(t_{n+1}) = x(t_n) + h\cdot v(t_{n})$
 
 - Slider zeigen aktuellen Wert der Simulationsparameter
 $\Rightarrow$ pausiere GUI, um parameter zu ändern
-- Problem: 1 Loop $\Rightarrow$ zeichnen wird auch pausiert 
+- Problem: 1 Loop 
+$\Rightarrow$ zeichnen wird auch pausiert 
 $\Rightarrow$ unschöner Sprung
 - 2 Lösungen:
     - Simulation pausieren
@@ -169,38 +189,26 @@ $\Rightarrow$ unschöner Sprung
 
 ## GUI - Umlaufbahnen
 
-- Speichere Regelmäßig Position
+- Speichere alle Position
 um die Flugbahn zu zeichnen
 - Problem: 
     - ewige Datenspeicherung
     - Speicher läuft voll
-    - Grafik stürzt ab
-<img src="AufgrundVonLeistungNichtZeichenbareSchwankungenDerBahnen.png" style="position: absolute; bottom: 40px; right: 10px; height: 440px;"/>
+    - Performance nimmt drastisch ab
+<img src="AufgrundVonLeistungNichtZeichenbareSchwankungenDerBahnen.png" style="position: absolute; bottom: 40px; right: 5px; height: 440px;"/>
 
 ---
 
 ## GUI - Pfad Optimisation
 
 - Pollingrate proportional zum Radius
-$\Rightarrow$ Weniger Datenpunkte für äußere Planeten, z.B. Neptun
-- Pfad schließen, wenn er sich dem Anfang nähert
-$\Rightarrow$ Gesamtmenge an Datenpunkten beschränkt
-- Problem: Beschleunigter Drift nach rechts
-$\Rightarrow$ Pfade lassen sich nur zu Beginn der Simulation schließen
+$\Rightarrow$ Weniger Datenpunkte
+- Pfade schließen
+$\Rightarrow$ Datenmenge beschränkt
+- Beschleunigte Bewegung des Systems
+$\Rightarrow$ Pfade nur selten schließbar
 
----
-
-## A Second Sun - The Aftermath
-
-- zweite Sonne
-- beide Sonnen, Merkur,
-Venus weg geschleudert
-- Mars, die Erde und der 
-Mond umkreisen die 
-zweite Sonne
-- Jupiter stürzt ins Zentrum
-
-<img src="IntroducedAnotherSunWith6e32kgMassItDestroyedEverything.png" style="position: absolute; bottom: 40px; right: 40px; height: 440px;"/>
+<img src="333.png" style="position: absolute; bottom: 65px; right: 5px; height: 400px;"/>
 
 ---
 
