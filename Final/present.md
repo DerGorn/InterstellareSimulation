@@ -159,7 +159,7 @@ step(h: f64) {
 
 ---
 
-## GUI - Kollision
+## Kollision
 
 - keine Kollision implementiert
 - Punktmassen kommen sich sehr nahe
@@ -174,7 +174,7 @@ $\Rightarrow \Delta x > 10^{12}\, \text{m}$
 
 ---
 
-## GUI - Simulationsparameter modifizieren
+## Simulationsparameter modifizieren
 
 - Slider zeigen aktuellen Wert der Simulationsparameter
 $\Rightarrow$ pausiere GUI, um parameter zu ändern
@@ -185,9 +185,12 @@ $\Rightarrow$ unschöner Sprung
     - Simulation pausieren
     - 2 Loops: einer zum Zeichnen, der andere für Parameter
 
+
+<img src="Slider.png" style="position: absolute; top: 125px; right: -100px; height: 280px;"/>
+
 ---
 
-## GUI - Umlaufbahnen
+## Umlaufbahnen
 
 - Speichere alle Position
 um die Flugbahn zu zeichnen
@@ -199,7 +202,7 @@ um die Flugbahn zu zeichnen
 
 ---
 
-## GUI - Pfad Optimisation
+## Umlaufbahnen Optimisation
 
 - Pollingrate proportional zum Radius
 $\Rightarrow$ Weniger Datenpunkte
